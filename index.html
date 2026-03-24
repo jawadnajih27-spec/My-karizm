@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nj</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ─── VARIABLES ─────────────────────────────────────────────────────── */
+    :root {
+      --gold:        #c9a84c;
+      --gold-light:  #e8c97a;
+      --gold-dim:    #8a6d2a;
+      --black:       #080808;
+      --black2:      #0f0f0f;
+      --black3:      #161616;
+      --white:       #f5f0e8;
+      --white-dim:   rgba(245,240,232,0.55);
+      --glass-bg:    rgba(255,255,255,0.04);
+      --glass-border:rgba(201,168,76,0.18);
+      --glass-glow:  rgba(201,168,76,0.08);
+    }
+
+    /* ─── RESET & BASE ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ─── TYPOGRAPHY ─────────────────────────────────────────────────────── */
+    .display {
+      font-family: 'Playfair Display', serif;
+      line-height: 1.1;
+    }
+    .gold-text {
+      background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dim));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── GOLD LINE ──────────────────────────────────────────────────────── */
+    .gold-line {
+      width: 60px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto;
+    }
+    .gold-line-left {
+      width: 60px; height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.5rem 4rem;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(8,8,8,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 1rem 4rem;
+    }
+    .nav-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+    }
+    .nav-cta {
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 600;
+      border: 1px solid var(--glass-border);
+      padding: 0.5rem 1.5rem;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .nav-cta:hover {
+      background: var(--gold);
+      color: var(--black);
+      border-color: var(--gold);
+    }
+
+    /* ─── HERO ───────────────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 650px;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://unsplash.com/fr/photos/femme-travaillant-au-bureau-avec-un-cafe-8UnGiO4yesk');
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.05);
+      transition: transform 8s ease;
+    }
+    .hero-bg.loaded { transform: scale(1); }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(8,8,8,0.3) 0%, rgba(8,8,8,0.55) 50%, rgba(8,8,8,0.95) 100%),
+        radial-gradient(ellipse at center, rgba(201,168,76,0.06) 0%, transparent 70%);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 0 2rem;
+      max-width: 900px;
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 1s 0.3s forwards;
+    }
+    .hero-title {
+      font-size: clamp(3rem, 9vw, 7rem);
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 1s 0.5s forwards;
+    }
+    .hero-sub {
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      color: var(--white-dim);
+      max-width: 540px;
+      margin: 0 auto 3rem;
+      line-height: 1.8;
+      opacity: 0;
+      animation: fadeUp 1s 0.7s forwards;
+    }
+    .hero-btn {
+      display: inline-flex; align-items: center; gap: 1rem;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: var(--black);
+      text-decoration: none;
+      padding: 1rem 3rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: all 0.3s;
+      opacity: 0;
+      animation: fadeUp 1s 0.9s forwards;
+      box-shadow: 0 8px 40px rgba(201,168,76,0.25);
+    }
+    .hero-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 60px rgba(201,168,76,0.4);
+    }
+    .hero-btn::after { content: '→'; font-size: 1rem; }
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      opacity: 0; animation: fadeUp 1s 1.2s forwards;
+    }
+    .hero-scroll span {
+      font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--gold-dim);
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* ─── ABOUT ──────────────────────────────────────────────────────────── */
+    .about {
+      padding: 8rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    .about-img-wrap {
+      position: relative;
+    }
+    .about-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      border-radius: 2px;
+      /* Glassmorphism frame */
+      box-shadow:
+        0 0 0 1px var(--glass-border),
+        0 30px 80px rgba(0,0,0,0.6),
+        inset 0 0 60px rgba(201,168,76,0.03);
+    }
+    .about-img-deco {
+      position: absolute;
+      top: -20px; right: -20px;
+      width: 100%; height: 100%;
+      border: 1px solid var(--glass-border);
+      border-radius: 2px;
+      pointer-events: none;
+    }
+    .about-label {
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+    .about-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 1.5rem;
+    }
+    .about-text {
+      color: var(--white-dim);
+      line-height: 1.9;
+      font-size: 1rem;
+    }
+
+    /* ─── OFFERS ─────────────────────────────────────────────────────────── */
+    .offers {
+      padding: 8rem 2rem;
+      background: var(--black2);
+      position: relative;
+      overflow: hidden;
+    }
+    .offers::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(201,168,76,0.04), transparent);
+    }
+    .offers-inner {
+      max-width: 1100px; margin: 0 auto;
+      position: relative; z-index: 1;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 1.5rem;
+    }
+    .offers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    /* Glassmorphism cards */
+    .offer-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s;
+    }
+    .offer-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .offer-card:hover { background: rgba(201,168,76,0.06); }
+    .offer-card:hover::before { opacity: 1; }
+    .offer-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      font-weight: 900;
+      color: rgba(201,168,76,0.1);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+      transition: color 0.4s;
+    }
+    .offer-card:hover .offer-num { color: rgba(201,168,76,0.2); }
+    .offer-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--white);
+    }
+    .offer-desc {
+      color: var(--white-dim);
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    /* ─── GALLERY ────────────────────────────────────────────────────────── */
+    .gallery {
+      padding: 8rem 2rem;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+    .gallery-item img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+      display: block;
+    }
+    .gallery-item:hover img { transform: scale(1.05); }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(8,8,8,0.7), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+      display: flex; align-items: flex-end;
+      padding: 2rem;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+    /* ─── CTA FINAL ──────────────────────────────────────────────────────── */
+    .cta-final {
+      padding: 10rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--black3);
+    }
+    .cta-final::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 50% 50%, rgba(201,168,76,0.06), transparent);
+    }
+    /* Big editorial background text */
+    .cta-bg-text {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(8rem, 20vw, 18rem);
+      font-weight: 900;
+      color: rgba(201,168,76,0.03);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: -5px;
+    }
+    .cta-final-inner {
+      position: relative; z-index: 1;
+      max-width: 700px; margin: 0 auto;
+    }
+    .cta-final-label {
+      font-size: 0.7rem; letter-spacing: 5px;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 2rem;
+    }
+    .cta-final-title {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      margin-bottom: 2rem;
+    }
+    .cta-final-sub {
+      color: var(--white-dim); font-size: 1rem;
+      line-height: 1.8; margin-bottom: 3.5rem;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--glass-border);
+      padding: 3rem 4rem;
+      display: flex;
+      align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold-light);
+    }
+    .footer-copy {
+      color: var(--white-dim);
+      font-size: 0.78rem;
+      letter-spacing: 1px;
+    }
+    .footer-badge {
+      font-size: 0.7rem;
+      color: rgba(201,168,76,0.4);
+      letter-spacing: 1px;
+    }
+
+    /* ─── ANIMATIONS ─────────────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── IMAGE UPLOAD STYLES (داخل لوحة التحكم فقط) ────────────────────── */
+    .image-upload-wrap {
+      background: var(--surface2, #1a1a26);
+      border: 1px solid var(--border, #2a2a3d);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex; flex-direction: column; gap: 0.75rem;
+    }
+    .img-preview { position: relative; }
+    .img-preview img {
+      width: 100%; max-height: 200px;
+      object-fit: cover; border-radius: 8px;
+    }
+    .img-remove-btn {
+      position: absolute; top: 8px; left: 8px;
+      background: rgba(0,0,0,0.7); color: white;
+      border: none; border-radius: 6px;
+      padding: 4px 10px; font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .img-drop-zone {
+      border: 2px dashed var(--border, #2a2a3d);
+      border-radius: 10px;
+      padding: 2rem;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.4rem;
+      cursor: pointer; transition: border-color 0.25s;
+      text-align: center;
+    }
+    .img-drop-zone:hover, .img-drop-zone.drag-over {
+      border-color: #c9a84c;
+      background: rgba(201,168,76,0.04);
+    }
+    .img-url-row {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 1.25rem 1.5rem; }
+      nav.scrolled { padding: 0.85rem 1.5rem; }
+      .about {
+        grid-template-columns: 1fr;
+        gap: 3rem; padding: 5rem 1.5rem;
+      }
+      .about-img-deco { display: none; }
+      .offers-grid { grid-template-columns: 1fr; gap: 1px; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+      .hero-title { font-size: clamp(2.5rem, 12vw, 4rem); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-brand">Nj</div>
+  <a href="https://unsplash.com/fr/photos/femme-travaillant-au-bureau-avec-un-cafe-8UnGiO4yesk" class="nav-cta">Nj</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Nj</div>
+    <h1 class="hero-title display gold-text">Nj</h1>
+    <p class="hero-sub">Nj</p>
+    <a href="https://unsplash.com/fr/photos/femme-travaillant-au-bureau-avec-un-cafe-8UnGiO4yesk" class="hero-btn">Nj</a>
+  </div>
+  <div class="hero-scroll">
+    <span>اكتشف</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about">
+  <div class="about-img-wrap reveal">
+    <img src="https://unsplash.com/fr/photos/femme-travaillant-au-bureau-avec-un-cafe-8UnGiO4yesk" alt="Nj" class="about-img" />
+    <div class="about-img-deco"></div>
+  </div>
+  <div class="reveal">
+    <div class="about-label">من نحن</div>
+    <div class="gold-line-left"></div>
+    <h2 class="about-title display">Nj</h2>
+    <p class="about-text">Nj</p>
+  </div>
+</section>
+
+<!-- OFFERS -->
+<section class="offers">
+  <div class="offers-inner">
+    <div class="section-header reveal">
+      <div class="section-label">ما نقدمه</div>
+      <div class="gold-line" style="margin-bottom:1.5rem"></div>
+      <h2 class="section-title display">التميّز في كل تفصيل</h2>
+    </div>
+    <div class="offers-grid">
+      <div class="offer-card reveal">
+        <div class="offer-num">01</div>
+        <div class="offer-title">Nj</div>
+        <div class="offer-desc">Nj</div>
+      </div>
+      <div class="offer-card reveal">
+        <div class="offer-num">02</div>
+        <div class="offer-title">Nj</div>
+        <div class="offer-desc">Nj</div>
+      </div>
+      <div class="offer-card reveal">
+        <div class="offer-num">03</div>
+        <div class="offer-title">Nj</div>
+        <div class="offer-desc">Nj</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery">
+  <div class="section-header reveal">
+    <div class="section-label">المعرض</div>
+    <div class="gold-line" style="margin-bottom:1.5rem"></div>
+    <h2 class="section-title display">لحظات لا تُنسى</h2>
+  </div>
+  <div class="gallery-grid">
+    <div class="gallery-item reveal">
+      <img src="https://unsplash.com/fr/photos/femme-travaillant-au-bureau-avec-un-cafe-8UnGiO4yesk" alt="gallery 1" />
+      <div class="gallery-overlay"></div>
+    </div>
+    <div class="gallery-item reveal">
+      <img src="https://unsplash.com/fr/photos/femme-travaillant-au-bureau-avec-un-cafe-8UnGiO4yesk" alt="gallery 2" />
+      <div class="gallery-overlay"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+  <div class="cta-bg-text">Nj</div>
+  <div class="cta-final-inner">
+    <div class="cta-final-label reveal">ابدأ الآن</div>
+    <div class="gold-line reveal" style="margin-bottom:2rem"></div>
+    <h2 class="cta-final-title display reveal">Nj</h2>
+    <p class="cta-final-sub reveal">Nj</p>
+    <a href="https://unsplash.com/fr/photos/femme-travaillant-au-bureau-avec-un-cafe-8UnGiO4yesk" class="hero-btn reveal">Nj</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Nj</div>
+  <div class="footer-copy">© 2026 Nj · جميع الحقوق محفوظة</div>
+  <div class="footer-badge">⚡ مصنع صفحات الهبوط</div>
+</footer>
+
+<script>
+  // ─── NAV SCROLL ──────────────────────────────────────────────────────────
+  const nav = document.getElementById("mainNav");
+  window.addEventListener("scroll", () => {
+    nav.classList.toggle("scrolled", window.scrollY > 60);
+  });
+
+  // ─── HERO BG ─────────────────────────────────────────────────────────────
+  const heroBg = document.getElementById("heroBg");
+  heroBg.style.backgroundImage = `url('https://unsplash.com/fr/photos/femme-travaillant-au-bureau-avec-un-cafe-8UnGiO4yesk')`;
+  const heroImg = new Image();
+  heroImg.onload = () => heroBg.classList.add("loaded");
+  heroImg.src = "https://unsplash.com/fr/photos/femme-travaillant-au-bureau-avec-un-cafe-8UnGiO4yesk";
+
+  // ─── SCROLL REVEAL ───────────────────────────────────────────────────────
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add("visible"), i * 100);
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll(".reveal").forEach(el => revealObserver.observe(el));
+</script>
+</body>
+</html>
